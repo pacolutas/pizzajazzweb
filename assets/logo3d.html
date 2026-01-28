@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Jazz Cafe 3D Logo</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #333; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: sans-serif;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">Arrastra para rotar • Rueda para zoom</div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
+        // 1. ESCENA, CÁMARA Y RENDERIZADOR
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x222222); // Fondo de la página gris oscuro
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 15);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // 2. CONTROLES (Para mover el logo con el mouse)
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        // 3. ILUMINACIÓN
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        dirLight.position.set(5, 5, 10);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+        
+        const backLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        backLight.position.set(-5, 0, -10);
+        scene.add(backLight);
+
+        // 4. GRUPO PRINCIPAL DEL LOGO
+        const logoGroup = new THREE.Group();
+        scene.add(logoGroup);
+
+        // 5. CARGAR FUENTE Y CREAR GEOMETRÍA
+        const loader = new FontLoader();
+        // Usamos una fuente estándar de Three.js (Helvetiker)
+        loader.load('https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json', function (font) {
+
+            // Configuración común del texto
+            const textParams = {
+                font: font,
+                size: 1.2,
+                height: 0.4, // Profundidad del texto 3D
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: 0.03,
+                bevelSize: 0.02,
+                bevelOffset: 0,
+                bevelSegments: 5
+            };
+
+            // Materiales
+            const matGray = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.4, metalness: 0.1 });
+            const matBlackText = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
+            const matBlackBase = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.8 });
+            const matWhiteBase = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+
+            // --- FUNCIÓN PARA CREAR TEXTO ---
+            function createText(text, material, yPos, scaleX = 0.8) {
+                const geometry = new TextGeometry(text, textParams);
+                geometry.computeBoundingBox();
+                const centerOffset = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+                geometry.translate(centerOffset, 0, 0); // Centrar geometría
+
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.y = yPos;
+                mesh.scale.x = scaleX; // Comprimir un poco para simular la fuente del logo
+                mesh.castShadow = true;
+                return mesh;
+            }
+
+            // CREAR LAS PALABRAS
+            // Ajustamos las posiciones Y para que cuadren
+            const meshPizza = createText('PIZZA', matGray, 1.3);
+            const meshJazz = createText('JAZZ', matGray, -0.2);
+            const meshCafe = createText('CAFE', matBlackText, -2.1); 
+
+            logoGroup.add(meshPizza);
+            logoGroup.add(meshJazz);
+            logoGroup.add(meshCafe);
+
+            // --- CREAR LOS FONDOS (CAJAS) ---
+            
+            // Fondo Negro (Arriba) - Abarca Pizza y Jazz
+            const topBoxGeo = new THREE.BoxGeometry(5.5, 3.8, 0.5);
+            const topBox = new THREE.Mesh(topBoxGeo, matBlackBase);
+            topBox.position.set(0, 1.0, -0.3); // Posición detrás del texto
+            logoGroup.add(topBox);
+
+            // Fondo Blanco (Abajo) - Abarca Cafe
+            const bottomBoxGeo = new THREE.BoxGeometry(5.5, 1.8, 0.5);
+            const bottomBox = new THREE.Mesh(bottomBoxGeo, matWhiteBase);
+            bottomBox.position.set(0, -1.8, -0.3); // Posición debajo del bloque negro
+            logoGroup.add(bottomBox);
+
+        });
+
+        // 6. ANIMACIÓN
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotación suave automática
+            logoGroup.rotation.y += 0.005;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Ajuste de ventana
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
