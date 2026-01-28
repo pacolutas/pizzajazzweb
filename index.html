@@ -70,7 +70,7 @@
             to { opacity: 1; }
         }
 
-        /* --- ESTILOS ORIGINALES DE TU WEB --- */
+        /* --- ESTILOS GENERALES --- */
         :root {
             --bg-color: #050505;
             --text-color: #f0f0f0;
@@ -87,7 +87,7 @@
             color: var(--text-color);
             font-family: var(--font-main);
             line-height: 1.6;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Evita scroll horizontal */
         }
 
         /* Ocultamos el contenido principal inicialmente */
@@ -97,7 +97,6 @@
             transition: opacity 1.5s ease-in;
         }
 
-        /* Typography */
         h1, h2, h3 { font-family: var(--font-serif); font-weight: normal; }
         a { color: inherit; text-decoration: none; transition: color 0.3s; }
         a:hover { color: var(--accent-color); }
@@ -114,7 +113,7 @@
             background: rgba(5, 5, 5, 0.95); padding: 15px 40px; border-bottom: 1px solid #222;
         }
         nav ul { display: flex; list-style: none; gap: 30px; }
-        nav ul li a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; }
+        nav ul li a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer;}
 
         /* Hero Section */
         .hero {
@@ -177,7 +176,7 @@
         .item-desc { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; }
         .item-price { display: block; font-size: 1.1rem; color: var(--accent-color); font-weight: bold; font-family: var(--font-serif); }
 
-        /* Contact Section */
+        /* --- CONTACT SECTION (REDESIGNED) --- */
         .contact-section {
             padding: 80px 20px;
             background-color: #000;
@@ -187,12 +186,13 @@
         .contact-section h2 {
             font-size: 2.5rem;
             color: var(--accent-color);
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
         .contact-icons {
             display: flex;
-            justify-content: center;
-            gap: 50px;
+            justify-content: center; /* Centra el bloque */
+            align-items: flex-start;
+            gap: 80px; /* Separación amplia entre items */
             flex-wrap: wrap;
         }
         .contact-item {
@@ -202,9 +202,10 @@
             gap: 15px;
             color: #fff;
             font-size: 1.1rem;
+            width: 150px; /* Ancho fijo para alinear mejor */
         }
         .contact-item i {
-            font-size: 2.5rem;
+            font-size: 3rem; /* Iconos más grandes */
             color: var(--accent-color);
             transition: transform 0.3s, color 0.3s;
         }
@@ -212,20 +213,106 @@
             transform: scale(1.1);
             color: #fff;
         }
-        .contact-btn {
-            background: #25D366; /* WhatsApp Green */
+        .contact-text {
+            font-size: 1rem;
+            color: #ccc;
+        }
+        /* Botón de mensaje pequeño y centrado */
+        .contact-btn-small {
+            background: #25D366; 
             color: white;
-            padding: 10px 20px;
+            padding: 5px 15px; /* Padding reducido */
             border-radius: 50px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* Texto más pequeño */
             margin-top: 5px;
             display: inline-block;
+            transition: background 0.3s;
         }
-        .contact-btn:hover {
+        .contact-btn-small:hover {
             background: #128C7E;
             color: white;
         }
+
+        /* --- MODAL AGENDA (STYLES) --- */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; 
+            z-index: 2000; /* On top of everything */
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.95); /* Black w/ opacity */
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: transparent;
+            margin: 5% auto; /* 5% from top and centered */
+            padding: 20px;
+            width: 90%; 
+            max-width: 1200px;
+            position: relative;
+            animation: fadeIn 0.4s;
+        }
+
+        .close-modal {
+            color: #aaa;
+            position: absolute;
+            top: 0;
+            right: 20px;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: var(--accent-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Estilos específicos de la agenda (copiados de tu código) */
+        .events-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .event-card {
+            background: #111;
+            border: 1px solid #222;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1);
+        }
+        .event-image {
+            width: 100%; height: 200px; object-fit: cover; filter: grayscale(80%); transition: filter 0.3s;
+        }
+        .event-card:hover .event-image { filter: grayscale(0%); }
+        .event-details { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .event-date { color: var(--accent-color); font-size: 0.85rem; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .event-title { font-size: 1.3rem; margin-bottom: 10px; line-height: 1.3; color: #fff; }
+        .event-desc { color: #aaa; font-size: 0.9rem; margin-bottom: 15px; flex-grow: 1; }
+        .event-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #222; padding-top: 15px; margin-top: auto; }
+        .event-price { font-weight: bold; color: #fff; }
+        .btn-reserve {
+            background: var(--accent-color); color: #000; padding: 6px 12px; text-transform: uppercase;
+            font-size: 0.75rem; font-weight: bold; border-radius: 2px; transition: background 0.3s;
+        }
+        .btn-reserve:hover { background: #fff; }
+        .loading { text-align: center; padding: 50px; font-size: 1.5rem; color: #666; width: 100%; }
+
 
         /* Footer */
         footer { padding: 50px 20px; text-align: center; background-color: #050505; border-top: 1px solid #222; color: #666; }
@@ -245,7 +332,10 @@
             .about { padding: 60px 5%; }
             .menu { padding: 60px 4%; }
             .menu-grid { grid-template-columns: 1fr; gap: 40px; }
-            .contact-icons { gap: 30px; }
+            
+            /* Ajuste Contacto en Móvil */
+            .contact-icons { flex-direction: column; align-items: center; gap: 40px; }
+            /* Orden específico para móvil si se desea (o mantener columna por defecto) */
         }
         @media (max-width: 480px) {
             nav ul { display: none; }
@@ -278,7 +368,7 @@
                     <li><a href="#about">Nosotros</a></li>
                     <li><a href="#menu">Menú</a></li>
                     <li><a href="#contacto">Contacto</a></li>
-                    <li><a href="agenda.html" style="color: var(--accent-color);">Agenda</a></li>
+                    <li><a onclick="openAgendaModal()" style="color: var(--accent-color);">Agenda</a></li>
                 </ul>
             </nav>
         </header>
@@ -486,27 +576,28 @@
 
         <section id="contacto" class="contact-section">
             <h2>Información y Reservas</h2>
+            
             <div class="contact-icons">
-                <div class="contact-item">
-                    <a href="https://wa.me/525527367912" target="_blank">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-                    <span>55 2736 7912</span>
-                    <a href="https://wa.me/525527367912" target="_blank" class="contact-btn">Enviar Mensaje</a>
-                </div>
-                
                 <div class="contact-item">
                     <a href="https://www.instagram.com/jazz_pizza.jazz/" target="_blank">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <span>Síguenos</span>
+                    <span class="contact-text">Síguenos</span>
+                </div>
+
+                <div class="contact-item">
+                    <a href="https://wa.me/525527367912" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <span class="contact-text">55 2736 7912</span>
+                    <a href="https://wa.me/525527367912" target="_blank" class="contact-btn-small">Enviar Mensaje</a>
                 </div>
 
                 <div class="contact-item">
                     <a href="https://www.facebook.com/groups/368619106483598" target="_blank">
                         <i class="fab fa-facebook"></i>
                     </a>
-                    <span>Únete al grupo</span>
+                    <span class="contact-text">Únete al grupo</span>
                 </div>
             </div>
         </section>
@@ -518,15 +609,27 @@
         </footer>
     </div>
 
+    <div id="agenda-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAgendaModal()">&times;</span>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="font-size: 2.5rem; color: var(--accent-color);">Próximos Eventos</h1>
+                <p style="color: #aaa;">Jazz en vivo, cultura y comunidad</p>
+             </div>
+
+            <div id="events-grid" class="events-container">
+                <div class="loading">Cargando eventos...</div>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import * as THREE from 'three';
-        // Quitamos OrbitControls porque haremos un movimiento sutil manual
         import { FontLoader } from 'three/addons/loaders/FontLoader.js';
         import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
         let animationId;
-        
-        // --- 1. CONFIGURACIÓN BÁSICA ---
         const container = document.getElementById('splash-canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x222222);
@@ -539,7 +642,7 @@
         renderer.shadowMap.enabled = true;
         container.appendChild(renderer.domElement);
 
-        // --- 2. VARIABLES PARA MOVIMIENTO DEL MOUSE SUAVE ---
+        // Variables Mouse
         let mouseX = 0;
         let mouseY = 0;
         let targetRotationX = 0;
@@ -547,24 +650,19 @@
         const windowHalfX = window.innerWidth / 2;
         const windowHalfY = window.innerHeight / 2;
 
-        document.addEventListener('mousemove', onDocumentMouseMove);
-
-        function onDocumentMouseMove(event) {
-            // Calculamos posición del mouse relativa al centro (-1 a 1)
+        document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX - windowHalfX) / 2; 
             mouseY = (event.clientY - windowHalfY) / 2;
-        }
+        });
 
-        // --- 3. ILUMINACIÓN ---
+        // Luces
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
-        
-        // Luz principal
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
         dirLight.position.set(5, 5, 10);
         scene.add(dirLight);
 
-        // --- 4. LOGO ---
+        // Logo
         const logoGroup = new THREE.Group();
         scene.add(logoGroup);
 
@@ -601,22 +699,14 @@
             logoGroup.add(bottomBox);
         });
 
-        // --- 5. ANIMACIÓN CON LÍMITES ---
         function animate() {
             animationId = requestAnimationFrame(animate);
-
-            // Mapeamos la posición del mouse a una rotación muy pequeña
-            // mouseX es grande (pixels), así que lo multiplicamos por un factor muy pequeño (0.0005)
-            // Limitamos que la rotación no sea excesiva
             targetRotationY = mouseX * 0.001; 
             targetRotationX = mouseY * 0.001;
-
-            // Interpolación (Lerp) para que sea suave: "Acércate un 5% al objetivo en cada frame"
             logoGroup.rotation.y += (targetRotationY - logoGroup.rotation.y) * 0.05;
             logoGroup.rotation.x += (targetRotationX - logoGroup.rotation.x) * 0.05;
-
-            // Restricción adicional (Clamping) por si acaso el mouse sale de pantalla
-            // Mantenemos la rotación entre -0.3 y 0.3 radianes (aprox 15 grados)
+            
+            // Límites
             logoGroup.rotation.y = Math.max(Math.min(logoGroup.rotation.y, 0.4), -0.4);
             logoGroup.rotation.x = Math.max(Math.min(logoGroup.rotation.x, 0.3), -0.3);
 
@@ -624,14 +714,13 @@
         }
         animate();
 
-        // Responsive
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // --- LÓGICA DE TRANSICIÓN ---
+        // Intro Logic
         const enterBtn = document.getElementById('enter-btn');
         const splashScreen = document.getElementById('splash-screen');
         const mainSite = document.getElementById('main-site');
@@ -640,28 +729,25 @@
         enterBtn.addEventListener('click', () => {
             bgMusic.volume = 0.5; 
             bgMusic.play().catch(e => console.log("Error de audio:", e));
-
             splashScreen.style.opacity = '0';
-            
             setTimeout(() => {
                 splashScreen.style.display = 'none';
-                cancelAnimationFrame(animationId); // Detener animación 3D
+                cancelAnimationFrame(animationId); 
                 mainSite.style.display = 'block';
-                setTimeout(() => {
-                    mainSite.style.opacity = '1';
-                }, 50);
-
+                setTimeout(() => { mainSite.style.opacity = '1'; }, 50);
             }, 1000);
         });
     </script>
 
     <script>
+        // --- 1. NAVBAR SCROLL ---
         window.addEventListener('scroll', function () {
             const header = document.getElementById('header');
             if (window.scrollY > 50) { header.classList.add('scrolled'); } 
             else { header.classList.remove('scrolled'); }
         });
 
+        // --- 2. TABS DEL MENÚ ---
         window.openTab = function(evt, tabName) {
             var i, x, tablinks;
             x = document.getElementsByClassName("menu-grid");
@@ -677,6 +763,120 @@
             activeGrid.style.display = "grid";
             setTimeout(() => activeGrid.classList.add('active'), 10);
             evt.currentTarget.className += " active";
+        }
+
+        // --- 3. LÓGICA DE AGENDA (FETCH CSV) ---
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAzqway7Ajx3mqnMvNkQlPlzQzQn8rTMAo7g0rA0nc3opRC3PbYMFTS2Di6oZCoqpK_aei__iyEO90/pub?output=csv';
+        let eventsLoaded = false;
+
+        window.openAgendaModal = function() {
+            document.getElementById('agenda-modal').style.display = "block";
+            // Prevenir scroll en el body
+            document.body.style.overflow = "hidden";
+            
+            if (!eventsLoaded) {
+                fetchEvents();
+                eventsLoaded = true;
+            }
+        }
+
+        window.closeAgendaModal = function() {
+            document.getElementById('agenda-modal').style.display = "none";
+            // Restaurar scroll
+            document.body.style.overflow = "auto";
+        }
+
+        // Cerrar al hacer clic fuera del contenido
+        window.onclick = function(event) {
+            const modal = document.getElementById('agenda-modal');
+            if (event.target == modal) {
+                closeAgendaModal();
+            }
+        }
+
+        async function fetchEvents() {
+            try {
+                const response = await fetch(CSV_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.text();
+
+                // CSV Parser (Tu código original)
+                function parseCSV(text) {
+                    const rows = [];
+                    let row = [];
+                    let inQuote = false;
+                    let currentCell = '';
+                    for (let i = 0; i < text.length; i++) {
+                        const char = text[i];
+                        const nextChar = text[i + 1];
+                        if (char === '"') {
+                            if (inQuote && nextChar === '"') {
+                                currentCell += '"'; i++;
+                            } else { inQuote = !inQuote; }
+                        } else if (char === ',' && !inQuote) {
+                            row.push(currentCell.trim()); currentCell = '';
+                        } else if ((char === '\r' || char === '\n') && !inQuote) {
+                            if (currentCell || row.length > 0) {
+                                row.push(currentCell.trim());
+                                if (row.some(cell => cell !== '')) rows.push(row);
+                                row = []; currentCell = '';
+                            }
+                            if (char === '\r' && nextChar === '\n') i++;
+                        } else { currentCell += char; }
+                    }
+                    if (currentCell || row.length > 0) {
+                        row.push(currentCell.trim());
+                        if (row.some(cell => cell !== '')) rows.push(row);
+                    }
+                    return rows;
+                }
+
+                const rows = parseCSV(data);
+                const grid = document.getElementById('events-grid');
+                grid.innerHTML = ''; 
+
+                rows.slice(1).forEach(cols => {
+                    if (cols.length < 2) return;
+                    const date = cols[0] || '';
+                    const artist = cols[1] || 'Evento Especial';
+                    const time = cols[2] || '';
+                    const desc = cols[3] || '';
+                    let cover = cols[4] || '0';
+                    const imgUrl = cols[5] || 'assets/logo.png';
+                    const reserveLink = cols[6] || '#';
+                    const priceValue = parseInt(cover.replace(/[^0-9]/g, '')) || 0;
+                    const priceDisplay = priceValue === 0 ? 'Entrada Libre' : `$${priceValue}`;
+
+                    const card = document.createElement('div');
+                    card.className = 'event-card';
+                    card.innerHTML = `
+                        <img src="${imgUrl}" alt="${artist}" class="event-image" onerror="this.src='assets/logo.png'">
+                        <div class="event-details">
+                            <div class="event-date">${date} | ${time}</div>
+                            <h3 class="event-title">${artist}</h3>
+                            <p class="event-desc">${desc}</p>
+                            <div class="event-meta">
+                                <span class="event-price">${priceDisplay}</span>
+                                <a href="${reserveLink}" target="_blank" class="btn-reserve">Reservar</a>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                if (grid.children.length === 0) {
+                    grid.innerHTML = '<div class="loading">No hay eventos próximos.</div>';
+                }
+
+            } catch (error) {
+                console.error('Error loading events:', error);
+                document.getElementById('events-grid').innerHTML = `
+                    <div class="loading" style="color: #a00;">
+                        No se pudo conectar con la agenda.<br>
+                        <small>Intenta recargar la página.</small>
+                    </div>
+                `;
+            }
         }
     </script>
 </body>
