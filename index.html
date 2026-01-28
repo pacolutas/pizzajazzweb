@@ -123,16 +123,14 @@
             display: flex; flex-direction: column; align-items: center;
         }
         
-        /* Contenedor DESTINO para el logo 3D en el Hero */
+        /* CORRECCIÓN: Contenedor más bajo para acercar el texto */
         #hero-3d-target {
             width: 100%;
-            height: 350px; /* Altura fija para el logo en Hero */
+            height: 220px; /* Reducido para eliminar el hueco */
             position: relative;
-            margin-bottom: 10px;
-            /* El canvas se insertará aquí via JS */
+            margin-bottom: 0px; 
         }
 
-        /* Título modificado */
         .hero-subtitle { 
             font-size: 1.8rem; 
             font-family: var(--font-serif);
@@ -219,7 +217,7 @@
 
         /* Responsive */
         @media (max-width: 1024px) { 
-            #hero-3d-target { height: 250px; }
+            #hero-3d-target { height: 180px; }
             .hero-subtitle { font-size: 1.5rem; }
         }
         @media (max-width: 768px) {
@@ -229,7 +227,7 @@
             .menu { padding: 60px 4%; }
             .menu-grid { grid-template-columns: 1fr; gap: 40px; }
             .contact-icons { flex-direction: column; align-items: center; gap: 40px; }
-            #hero-3d-target { height: 200px; }
+            #hero-3d-target { height: 150px; }
         }
         @media (max-width: 480px) {
             nav ul { display: none; }
@@ -298,15 +296,33 @@
                 <button class="tab-btn" onclick="openTab(event, 'calientes')">Bebidas Calientes</button>
                 <button class="tab-btn" onclick="openTab(event, 'frias')">Bebidas Frías</button>
             </div>
+            
             <div id="pizzas" class="menu-grid active">
-                <div class="menu-item"><img src="assets/menu/pizzas/KENDRICK SCOTT.jpeg"><div class="item-info"><h3 class="item-title">Pizza Kendrick Scott</h3><p class="item-desc">Mozzarella y queso de cabra.</p><span class="item-price">$225.50</span></div></div>
-                <div class="menu-item"><img src="assets/menu/pizzas/JOE LOVANO.jpeg"><div class="item-info"><h3 class="item-title">Pizza Joe Lovano</h3><p class="item-desc">Salchicha ahumada premium.</p><span class="item-price">$258.50</span></div></div>
-                </div>
-            <div id="calientes" class="menu-grid">
-                 <div class="menu-item"><img src="assets/menu/bebidas calientes/AMERICANO GUERRERENSE.png"><div class="item-info"><h3 class="item-title">Americano</h3><span class="item-price">$45.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/KENDRICK SCOTT.jpeg"><div class="item-info"><h3 class="item-title">Pizza Kendrick Scott</h3><p class="item-desc">Mozzarella y queso de cabra sobre una masa esponjosa y ligera con salsa de jitomate, frescura y un toque terroso.</p><span class="item-price">$225.50</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/JOE LOVANO.jpeg"><div class="item-info"><h3 class="item-title">Pizza Joe Lovano</h3><p class="item-desc">Mozzarella y salchicha ahumada premium sobre una base de masa suave y esponjosa con salsa de jitomate.</p><span class="item-price">$258.50</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/DEXTER GORDON.jpeg"><div class="item-info"><h3 class="item-title">Pizza Dexter Gordon</h3><p class="item-desc">Mozzarella cremosa y salami sobre una masa ligera y mullida con salsa de jitomate.</p><span class="item-price">$253.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/RODRIGO CASTELAN.jpeg"><div class="item-info"><h3 class="item-title">Pizza Rodrigo Castelán</h3><p class="item-desc">Mozzarella, queso de cabra y champiñones asados sobre masa suave con salsa de jitomate.</p><span class="item-price">$236.50</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/HENRY COLE.jpeg"><div class="item-info"><h3 class="item-title">Pizza Henry Cole</h3><p class="item-desc">Mozzarella, jitomate fresco, champiñones y aceitunas negras kalamata.</p><span class="item-price">$275.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/GILAD HEKSMAN.jpeg"><div class="item-info"><h3 class="item-title">Pizza Gilad Heksman</h3><p class="item-desc">Tradición hecha pizza con salsa de jitomate casera y mozzarella fundida.</p><span class="item-price">$209.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/STAN GETZ.jpeg"><div class="item-info"><h3 class="item-title">Pizza Stan Getz</h3><p class="item-desc">Sin salsa de jitomate, jamón serrano, pera, queso azul y reducción de balsámico.</p><span class="item-price">$302.50</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/REMI ALVAREZ.jpeg"><div class="item-info"><h3 class="item-title">Pizza Remi Álvarez</h3><p class="item-desc">Mozzarella sedosa y queso azul danés fundidos con salsa de jitomate.</p><span class="item-price">$225.50</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/ADRIAN ESCAMILLA.jpeg"><div class="item-info"><h3 class="item-title">Pizza Adrián Escamilla</h3><p class="item-desc">Chorizo de pamplona, champiñones, cebolla morada, queso de cabra y balsámico.</p><span class="item-price">$302.50</span></div></div>
             </div>
+            
+            <div id="calientes" class="menu-grid">
+                 <div class="menu-item"><img src="assets/menu/bebidas calientes/AMERICANO GUERRERENSE.png"><div class="item-info"><h3 class="item-title">Americano Guerrerense</h3><p class="item-desc">Café de especialidad de Guerrero.</p><span class="item-price">$45.00</span></div></div>
+                 <div class="menu-item"><img src="assets/menu/bebidas calientes/EXPRESSO ARTESANAL.png"><div class="item-info"><h3 class="item-title">Espresso Artesanal</h3><p class="item-desc">Shot concentrado de café de Guerrero.</p><span class="item-price">$45.00</span></div></div>
+                 <div class="menu-item"><img src="assets/menu/bebidas calientes/CAPUCHINO DE ALTURA.png"><div class="item-info"><h3 class="item-title">Capuchino De Altura</h3><p class="item-desc">Espresso guerrerense, leche vaporizada.</p><span class="item-price">$65.00</span></div></div>
+                 <div class="menu-item"><img src="assets/menu/bebidas calientes/LATTE DE ESPECIALIDAD.png"><div class="item-info"><h3 class="item-title">Latte De Especialidad</h3><p class="item-desc">Espresso de Guerrero con notas a caramelo.</p><span class="item-price">$65.00</span></div></div>
+                 <div class="menu-item"><img src="assets/menu/bebidas calientes/CHOCOLATE.png"><div class="item-info"><h3 class="item-title">Chocolate</h3><p class="item-desc">Tradicional chocolate caliente.</p><span class="item-price">$65.00</span></div></div>
+            </div>
+            
             <div id="frias" class="menu-grid">
-                <div class="menu-item"><img src="assets/menu/bebidas frías/EXPRESSO TONIC.png"><div class="item-info"><h3 class="item-title">Espresso Tonic</h3><span class="item-price">$85.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/bebidas frías/EXPRESSO TONIC.png"><div class="item-info"><h3 class="item-title">Espresso Tonic</h3><p class="item-desc">Refrescante y cítrico.</p><span class="item-price">$85.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/bebidas frías/EXPRESSO TONIC CON JUGO.png"><div class="item-info"><h3 class="item-title">Espresso Tonic Con Jugo</h3><p class="item-desc">Versión tropical con jugo de naranja.</p><span class="item-price">$100.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/bebidas frías/EXPRESSO COCA-LIMÓN.png"><div class="item-info"><h3 class="item-title">Espresso Cocalimón</h3><p class="item-desc">Con Coca-Cola y toque de limón.</p><span class="item-price">$90.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/bebidas frías/ICE STEAMED AMERICANO.png"><div class="item-info"><h3 class="item-title">Ice Steamed Americano</h3><p class="item-desc">Americano vaporizado y enfriado.</p><span class="item-price">$80.00</span></div></div>
+                <div class="menu-item"><img src="assets/menu/bebidas frías/CAPUCHINO FRAPPE.png"><div class="item-info"><h3 class="item-title">Frappé Clásico</h3><p class="item-desc">Capuchino frío y granizado.</p><span class="item-price">$85.00</span></div></div>
             </div>
         </section>
 
@@ -354,7 +370,6 @@
         import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
         let animationId;
-        // Importante: ALPHA: TRUE para que el fondo sea transparente en el Hero
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         
         // Inicialmente lo ponemos en el contenedor del splash
@@ -364,15 +379,13 @@
         // Configuración inicial de tamaño (Fullscreen)
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
-        // Pixel ratio para nitidez en móviles
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         const scene = new THREE.Scene();
-        // NO ponemos scene.background. Dejamos que CSS controle el color de fondo.
-        // En splash: CSS #050505. En Hero: CSS transparente (video se ve).
-
+        
+        // CORRECCIÓN: Cámara más cerca (12 en vez de 15) para que el logo se vea grande en el espacio reducido
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 15);
+        camera.position.set(0, 0, 15); 
 
         // Variables Mouse
         let mouseX = 0; let mouseY = 0;
@@ -442,25 +455,19 @@
 
         // --- LÓGICA DE TRANSICIÓN Y RESIZE ---
         
-        // Estado: ¿Está el logo en modo Splash o Hero?
         let isHeroMode = false;
         const heroTarget = document.getElementById('hero-3d-target');
 
         function updateCanvasSize() {
             if (isHeroMode) {
-                // Si está en el Hero, usa el tamaño del contenedor del Hero
                 const width = heroTarget.clientWidth;
                 const height = heroTarget.clientHeight;
                 renderer.setSize(width, height);
                 camera.aspect = width / height;
                 camera.updateProjectionMatrix();
-                
-                // Actualizamos centros para el mouse
-                windowHalfX = window.innerWidth / 2; // El mouse sigue relativo a ventana
+                windowHalfX = window.innerWidth / 2;
                 windowHalfY = window.innerHeight / 2;
-                
             } else {
-                // Si está en Splash, usa toda la ventana
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
@@ -481,21 +488,20 @@
             bgMusic.volume = 0.5; 
             bgMusic.play().catch(e => console.log("Error audio:", e));
             
-            // 1. Desvanecer el Splash Screen (el fondo negro y botón)
             splashScreen.style.opacity = '0';
-            splashScreen.style.visibility = 'hidden'; // Para que no bloquee clicks después
+            splashScreen.style.visibility = 'hidden';
             
-            // 2. Mostrar sitio principal
             mainSite.style.display = 'block';
             setTimeout(() => { mainSite.style.opacity = '1'; }, 50);
 
-            // 3. MOVER EL CANVAS AL HERO
+            // Mover el canvas al Hero
             isHeroMode = true;
             heroTarget.appendChild(renderer.domElement);
-            updateCanvasSize(); // Recalcular tamaño para ajustar al contenedor del Hero
             
-            // Ajustar un poco la cámara si es necesario para el nuevo tamaño pequeño
-            // (Opcional: Si se ve muy cerca o lejos, ajusta camera.position.z aquí)
+            // CORRECCIÓN: ACERCAMOS CÁMARA PARA QUE NO SE VEA PEQUEÑO EN EL HERO
+            camera.position.set(0, 0, 12); 
+            
+            updateCanvasSize(); 
         });
     </script>
 
