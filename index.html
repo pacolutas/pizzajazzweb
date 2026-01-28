@@ -18,28 +18,23 @@
     </script>
 
     <style>
-        /* --- ESTILOS DEL SPLASH SCREEN (INTRO 3D) --- */
+        /* --- ESTILOS DEL SPLASH SCREEN --- */
         #splash-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999;
-            background-color: #222; 
+            background-color: #050505; /* Fondo negro inicial */
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            transition: opacity 1s ease-out;
+            transition: opacity 1s ease-out, visibility 1s;
         }
 
+        /* Contenedor inicial del Canvas 3D */
         #splash-canvas-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
         }
 
@@ -66,9 +61,7 @@
             box-shadow: 0 0 15px #d4af37;
         }
 
-        @keyframes fadeInBtn {
-            to { opacity: 1; }
-        }
+        @keyframes fadeInBtn { to { opacity: 1; } }
 
         /* --- ESTILOS GENERALES --- */
         :root {
@@ -87,10 +80,10 @@
             color: var(--text-color);
             font-family: var(--font-main);
             line-height: 1.6;
-            overflow-x: hidden; /* Evita scroll horizontal */
+            overflow-x: hidden;
         }
 
-        /* Ocultamos el contenido principal inicialmente */
+        /* Ocultamos el sitio inicialmente */
         #main-site {
             opacity: 0;
             display: none; 
@@ -106,14 +99,14 @@
             position: fixed; top: 0; width: 100%; padding: 20px 40px;
             display: flex; justify-content: space-between; align-items: center;
             z-index: 1000;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
             transition: background 0.5s;
         }
         header.scrolled {
             background: rgba(5, 5, 5, 0.95); padding: 15px 40px; border-bottom: 1px solid #222;
         }
         nav ul { display: flex; list-style: none; gap: 30px; }
-        nav ul li a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer;}
+        nav ul li a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
 
         /* Hero Section */
         .hero {
@@ -123,13 +116,33 @@
         .video-bg {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             min-width: 100%; min-height: 100%; width: auto; height: auto;
-            z-index: -1; filter: grayscale(100%) contrast(1.2) brightness(0.6); object-fit: cover;
+            z-index: -1; filter: grayscale(100%) contrast(1.2) brightness(0.5); object-fit: cover;
         }
-        .hero-content { z-index: 1; padding: 20px; max-width: 90%; }
-        .hero-title { font-size: 4rem; margin-bottom: 10px; letter-spacing: 5px; text-transform: uppercase; }
-        .hero-subtitle { font-size: 1.5rem; font-style: italic; color: #ccc; margin-bottom: 30px; }
-        .hero-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .hero-content { 
+            z-index: 1; padding: 20px; width: 100%; max-width: 1200px;
+            display: flex; flex-direction: column; align-items: center;
+        }
         
+        /* Contenedor DESTINO para el logo 3D en el Hero */
+        #hero-3d-target {
+            width: 100%;
+            height: 350px; /* Altura fija para el logo en Hero */
+            position: relative;
+            margin-bottom: 10px;
+            /* El canvas se insertará aquí via JS */
+        }
+
+        /* Título modificado */
+        .hero-subtitle { 
+            font-size: 1.8rem; 
+            font-family: var(--font-serif);
+            color: #fff; 
+            margin-bottom: 40px; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+        }
+
+        .hero-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
         .btn {
             padding: 12px 30px; border: 1px solid #fff; color: #fff; text-transform: uppercase;
             letter-spacing: 2px; font-size: 0.8rem; background: transparent; cursor: pointer;
@@ -139,12 +152,10 @@
         .btn-primary { background-color: var(--accent-color); border-color: var(--accent-color); color: #000; font-weight: bold; }
         .btn-primary:hover { background-color: #b5952f; border-color: #b5952f; color: #fff; }
 
-        /* About Section */
+        /* About & Menu Sections */
         .about { padding: 100px 10%; background-color: var(--bg-color); text-align: center; }
         .about h2 { font-size: 2.5rem; margin-bottom: 30px; color: var(--accent-color); }
         .about p { font-size: 1.1rem; max-width: 800px; margin: 0 auto 30px; color: #bbb; }
-
-        /* Menu Section */
         .menu { padding: 100px 5%; background-color: var(--secondary-bg); }
         .menu-header { text-align: center; margin-bottom: 60px; }
         .menu-header h2 { font-size: 3rem; margin-bottom: 10px; }
@@ -155,150 +166,42 @@
             border-bottom: 2px solid transparent;
         }
         .tab-btn.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
-        
-        .menu-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px; display: none; animation: fadeIn 0.5s ease-in;
-        }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; display: none; animation: fadeIn 0.5s ease-in; }
         .menu-grid.active { display: grid; }
-        
-        .menu-item {
-            background: #000; border: 1px solid #222; transition: transform 0.3s;
-            display: flex; flex-direction: column;
-        }
+        .menu-item { background: #000; border: 1px solid #222; transition: transform 0.3s; display: flex; flex-direction: column; }
         .menu-item:hover { transform: translateY(-5px); border-color: #333; }
-        .menu-item img {
-            width: 100%; height: 250px; object-fit: cover; filter: grayscale(100%); transition: filter 0.3s;
-        }
+        .menu-item img { width: 100%; height: 250px; object-fit: cover; filter: grayscale(100%); transition: filter 0.3s; }
         .menu-item:hover img { filter: grayscale(0%); }
         .item-info { padding: 20px; text-align: center; flex-grow: 1; }
         .item-title { font-size: 1.1rem; margin-bottom: 5px; color: #fff; text-transform: uppercase; }
         .item-desc { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; }
         .item-price { display: block; font-size: 1.1rem; color: var(--accent-color); font-weight: bold; font-family: var(--font-serif); }
 
-        /* --- CONTACT SECTION (REDESIGNED) --- */
-        .contact-section {
-            padding: 80px 20px;
-            background-color: #000;
-            text-align: center;
-            border-top: 1px solid #222;
-        }
-        .contact-section h2 {
-            font-size: 2.5rem;
-            color: var(--accent-color);
-            margin-bottom: 50px;
-        }
-        .contact-icons {
-            display: flex;
-            justify-content: center; /* Centra el bloque */
-            align-items: flex-start;
-            gap: 80px; /* Separación amplia entre items */
-            flex-wrap: wrap;
-        }
-        .contact-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            color: #fff;
-            font-size: 1.1rem;
-            width: 150px; /* Ancho fijo para alinear mejor */
-        }
-        .contact-item i {
-            font-size: 3rem; /* Iconos más grandes */
-            color: var(--accent-color);
-            transition: transform 0.3s, color 0.3s;
-        }
-        .contact-item:hover i {
-            transform: scale(1.1);
-            color: #fff;
-        }
-        .contact-text {
-            font-size: 1rem;
-            color: #ccc;
-        }
-        /* Botón de mensaje pequeño y centrado */
+        /* Contact Section */
+        .contact-section { padding: 80px 20px; background-color: #000; text-align: center; border-top: 1px solid #222; }
+        .contact-section h2 { font-size: 2.5rem; color: var(--accent-color); margin-bottom: 50px; }
+        .contact-icons { display: flex; justify-content: center; align-items: flex-start; gap: 80px; flex-wrap: wrap; }
+        .contact-item { display: flex; flex-direction: column; align-items: center; gap: 15px; color: #fff; font-size: 1.1rem; width: 150px; }
+        .contact-item i { font-size: 3rem; color: var(--accent-color); transition: transform 0.3s, color 0.3s; }
+        .contact-item:hover i { transform: scale(1.1); color: #fff; }
+        .contact-text { font-size: 1rem; color: #ccc; }
         .contact-btn-small {
-            background: #25D366; 
-            color: white;
-            padding: 5px 15px; /* Padding reducido */
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 0.8rem; /* Texto más pequeño */
-            margin-top: 5px;
-            display: inline-block;
-            transition: background 0.3s;
+            background: #25D366; color: white; padding: 5px 15px; border-radius: 50px;
+            font-weight: bold; font-size: 0.8rem; margin-top: 5px; display: inline-block; transition: background 0.3s;
         }
-        .contact-btn-small:hover {
-            background: #128C7E;
-            color: white;
-        }
+        .contact-btn-small:hover { background: #128C7E; color: white; }
 
-        /* --- MODAL AGENDA (STYLES) --- */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; 
-            z-index: 2000; /* On top of everything */
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.95); /* Black w/ opacity */
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: transparent;
-            margin: 5% auto; /* 5% from top and centered */
-            padding: 20px;
-            width: 90%; 
-            max-width: 1200px;
-            position: relative;
-            animation: fadeIn 0.4s;
-        }
-
-        .close-modal {
-            color: #aaa;
-            position: absolute;
-            top: 0;
-            right: 20px;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 2001;
-        }
-
-        .close-modal:hover,
-        .close-modal:focus {
-            color: var(--accent-color);
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Estilos específicos de la agenda (copiados de tu código) */
-        .events-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
-        }
-        .event-card {
-            background: #111;
-            border: 1px solid #222;
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-        .event-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-color);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1);
-        }
-        .event-image {
-            width: 100%; height: 200px; object-fit: cover; filter: grayscale(80%); transition: filter 0.3s;
-        }
+        /* Modal Agenda */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.95); backdrop-filter: blur(5px); }
+        .modal-content { background-color: transparent; margin: 5% auto; padding: 20px; width: 90%; max-width: 1200px; position: relative; animation: fadeIn 0.4s; }
+        .close-modal { color: #aaa; position: absolute; top: 0; right: 20px; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 2001; }
+        .close-modal:hover { color: var(--accent-color); }
+        
+        /* Estilos Agenda Modal */
+        .events-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
+        .event-card { background: #111; border: 1px solid #222; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; }
+        .event-card:hover { transform: translateY(-5px); border-color: var(--accent-color); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1); }
+        .event-image { width: 100%; height: 200px; object-fit: cover; filter: grayscale(80%); transition: filter 0.3s; }
         .event-card:hover .event-image { filter: grayscale(0%); }
         .event-details { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
         .event-date { color: var(--accent-color); font-size: 0.85rem; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
@@ -306,40 +209,30 @@
         .event-desc { color: #aaa; font-size: 0.9rem; margin-bottom: 15px; flex-grow: 1; }
         .event-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #222; padding-top: 15px; margin-top: auto; }
         .event-price { font-weight: bold; color: #fff; }
-        .btn-reserve {
-            background: var(--accent-color); color: #000; padding: 6px 12px; text-transform: uppercase;
-            font-size: 0.75rem; font-weight: bold; border-radius: 2px; transition: background 0.3s;
-        }
+        .btn-reserve { background: var(--accent-color); color: #000; padding: 6px 12px; text-transform: uppercase; font-size: 0.75rem; font-weight: bold; border-radius: 2px; transition: background 0.3s; }
         .btn-reserve:hover { background: #fff; }
         .loading { text-align: center; padding: 50px; font-size: 1.5rem; color: #666; width: 100%; }
 
-
-        /* Footer */
         footer { padding: 50px 20px; text-align: center; background-color: #050505; border-top: 1px solid #222; color: #666; }
         .footer-logo { margin-bottom: 20px; font-family: var(--font-serif); font-size: 1.5rem; color: #fff; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Responsive */
-        @media (max-width: 1024px) { .hero-title { font-size: 3.5rem; } }
+        @media (max-width: 1024px) { 
+            #hero-3d-target { height: 250px; }
+            .hero-subtitle { font-size: 1.5rem; }
+        }
         @media (max-width: 768px) {
             header { padding: 15px 20px; }
             nav ul { gap: 15px; }
-            .hero-title { font-size: 2.5rem; line-height: 1.2; }
             .about { padding: 60px 5%; }
             .menu { padding: 60px 4%; }
             .menu-grid { grid-template-columns: 1fr; gap: 40px; }
-            
-            /* Ajuste Contacto en Móvil */
             .contact-icons { flex-direction: column; align-items: center; gap: 40px; }
-            /* Orden específico para móvil si se desea (o mantener columna por defecto) */
+            #hero-3d-target { height: 200px; }
         }
         @media (max-width: 480px) {
             nav ul { display: none; }
-            .hero-title { font-size: 2rem; }
             .hero-buttons .btn { width: 100%; }
         }
     </style>
@@ -359,7 +252,7 @@
         <header id="header">
             <div class="logo">
                 <a href="#home">
-                    <img src="assets/logo.png" style="height: 60px; filter: invert(1) brightness(2);">
+                    <img src="assets/logo.png" style="height: 50px; filter: invert(1) brightness(2);">
                 </a>
             </div>
             <nav>
@@ -376,14 +269,13 @@
         <section id="home" class="hero">
             <video class="video-bg" autoplay muted loop playsinline>
                 <source src="assets/fondo.webm" type="video/webm">
-                Tu navegador no soporta video HTML5.
             </video>
+            
             <div class="hero-content">
-                <div style="margin-bottom: 20px;">
-                    <img src="assets/logo.png" style="max-width: 180px; width: 50%; filter: invert(1);">
-                </div>
-                <h1 class="hero-title">Pizza Jazz Café</h1>
-                <p class="hero-subtitle">Música para tu paladar en Portales, CDMX</p>
+                <div id="hero-3d-target"></div>
+                
+                <p class="hero-subtitle">El Mítico Club de Jazz en la Portales-CDMX</p>
+                
                 <div class="hero-buttons">
                     <button class="btn" onclick="document.getElementById('menu').scrollIntoView({behavior: 'smooth'})">Ver Menú</button>
                     <a href="https://www.ubereats.com/mx/store/pizza-jazz-cafe/wvinhx7BVi-gtELUKRzz5g?ps=1" target="_blank" class="btn btn-primary">Pedidos a Domicilio</a>
@@ -393,11 +285,7 @@
 
         <section id="about" class="about">
             <h2>Jazz, Pizza & Café</h2>
-            <p>
-                Ubicados en el corazón de la Portales, fusionamos la improvisación del jazz con el arte de la pizza artesanal.
-                Un espacio en blanco y negro donde los sabores tienen ritmo y el café cuenta historias.
-                Ven a disfrutar de una experiencia cultural única.
-            </p>
+            <p>Ubicados en el corazón de la Portales, fusionamos la improvisación del jazz con el arte de la pizza artesanal. Un espacio en blanco y negro donde los sabores tienen ritmo.</p>
         </section>
 
         <section id="menu" class="menu">
@@ -405,198 +293,37 @@
                 <h2>Nuestra Carta</h2>
                 <p style="color: #666;">Selecciona una categoría</p>
             </div>
-
             <div class="tabs">
                 <button class="tab-btn active" onclick="openTab(event, 'pizzas')">Pizzas</button>
                 <button class="tab-btn" onclick="openTab(event, 'calientes')">Bebidas Calientes</button>
                 <button class="tab-btn" onclick="openTab(event, 'frias')">Bebidas Frías</button>
             </div>
-
             <div id="pizzas" class="menu-grid active">
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/KENDRICK SCOTT.jpeg" alt="Pizza Kendrick Scott">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Kendrick Scott</h3>
-                        <p class="item-desc">Mozzarella y queso de cabra sobre una masa esponjosa y ligera con salsa de jitomate, frescura y un toque terroso.</p>
-                        <span class="item-price">$225.50</span>
-                    </div>
+                <div class="menu-item"><img src="assets/menu/pizzas/KENDRICK SCOTT.jpeg"><div class="item-info"><h3 class="item-title">Pizza Kendrick Scott</h3><p class="item-desc">Mozzarella y queso de cabra.</p><span class="item-price">$225.50</span></div></div>
+                <div class="menu-item"><img src="assets/menu/pizzas/JOE LOVANO.jpeg"><div class="item-info"><h3 class="item-title">Pizza Joe Lovano</h3><p class="item-desc">Salchicha ahumada premium.</p><span class="item-price">$258.50</span></div></div>
                 </div>
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/JOE LOVANO.jpeg" alt="Pizza Joe Lovano">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Joe Lovano</h3>
-                        <p class="item-desc">Mozzarella y salchicha ahumada premium sobre una base de masa suave y esponjosa con salsa de jitomate.</p>
-                        <span class="item-price">$258.50</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/DEXTER GORDON.jpeg" alt="Pizza Dexter Gordon">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Dexter Gordon</h3>
-                        <p class="item-desc">Mozzarella cremosa y salami sobre una masa ligera y mullida con salsa de jitomate; equilibrio entre intensidad y delicadeza.</p>
-                        <span class="item-price">$253.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/RODRIGO CASTELAN.jpeg" alt="Pizza Rodrigo Castelán">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Rodrigo Castelán</h3>
-                        <p class="item-desc">Mozzarella, queso de cabra y champiñones asados sobre masa suave y ligera con salsa de jitomate.</p>
-                        <span class="item-price">$236.50</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/HENRY COLE.jpeg" alt="Pizza Henry Cole">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Henry Cole</h3>
-                        <p class="item-desc">Mozzarella, jitomate fresco, champiñones y aceitunas negras kalamata sobre masa suave y llena de burbujas.</p>
-                        <span class="item-price">$275.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/GILAD HEKSMAN.jpeg" alt="Pizza Gilad Heksman">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Gilad Heksman</h3>
-                        <p class="item-desc">Tradición hecha pizza con salsa de jitomate casera y mozzarella fundida sobre una masa esponjosa y suave.</p>
-                        <span class="item-price">$209.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/STAN GETZ.jpeg" alt="Pizza Stan Getz">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Stan Getz</h3>
-                        <p class="item-desc">Sin salsa de jitomate, jamón serrano, pera, queso azul y reducción de balsámico sobre masa esponjosa.</p>
-                        <span class="item-price">$302.50</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/REMI ALVAREZ.jpeg" alt="Pizza Remi Álvarez">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Remi Álvarez</h3>
-                        <p class="item-desc">Mozzarella sedosa y queso azul danés fundidos sobre nuestra masa suave con salsa de jitomate.</p>
-                        <span class="item-price">$225.50</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/pizzas/ADRIAN ESCAMILLA.jpeg" alt="Pizza Adrián Escamilla">
-                    <div class="item-info">
-                        <h3 class="item-title">Pizza Adrián Escamilla</h3>
-                        <p class="item-desc">Chorizo de pamplona, champiñones, cebolla morada, queso de cabra y un toque de balsámico.</p>
-                        <span class="item-price">$302.50</span>
-                    </div>
-                </div>
-            </div>
-
             <div id="calientes" class="menu-grid">
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas calientes/AMERICANO GUERRERENSE.png" alt="Americano Guerrerense">
-                    <div class="item-info">
-                        <h3 class="item-title">Americano Guerrerense</h3>
-                        <p class="item-desc">Doble shot de café de especialidad de Guerrero recién molido; balance entre cuerpo y notas frutales/chocolatosas.</p>
-                        <span class="item-price">$45.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas calientes/EXPRESSO ARTESANAL.png" alt="Espresso Artesanal">
-                    <div class="item-info">
-                        <h3 class="item-title">Espresso Artesanal</h3>
-                        <p class="item-desc">Shot concentrado de café de Guerrero cultivado en altura, cuerpo sedoso y aroma intenso.</p>
-                        <span class="item-price">$45.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas calientes/CAPUCHINO DE ALTURA.png" alt="Capuchino De Altura">
-                    <div class="item-info">
-                        <h3 class="item-title">Capuchino De Altura</h3>
-                        <p class="item-desc">Espresso guerrerense, leche vaporizada y espuma cremosa decorada con arte latte.</p>
-                        <span class="item-price">$65.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas calientes/LATTE DE ESPECIALIDAD.png" alt="Latte De Especialidad">
-                    <div class="item-info">
-                        <h3 class="item-title">Latte De Especialidad</h3>
-                        <p class="item-desc">Espresso de Guerrero con notas a caramelo y leche al vapor suave.</p>
-                        <span class="item-price">$65.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas calientes/CHOCOLATE.png" alt="Chocolate">
-                    <div class="item-info">
-                        <h3 class="item-title">Chocolate</h3>
-                        <p class="item-desc">Tradicional chocolate caliente estilo artesanal.</p>
-                        <span class="item-price">$65.00</span>
-                    </div>
-                </div>
+                 <div class="menu-item"><img src="assets/menu/bebidas calientes/AMERICANO GUERRERENSE.png"><div class="item-info"><h3 class="item-title">Americano</h3><span class="item-price">$45.00</span></div></div>
             </div>
-
             <div id="frias" class="menu-grid">
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas frías/EXPRESSO TONIC.png" alt="Espresso Tónic">
-                    <div class="item-info">
-                        <h3 class="item-title">Espresso Tónic</h3>
-                        <p class="item-desc">Espresso arábica de Guerrero frío sobre agua tónica con cáscara de limón. Refrescante y cítrico.</p>
-                        <span class="item-price">$85.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas frías/EXPRESSO TONIC CON JUGO.png" alt="Espresso Tonic Con Jugo">
-                    <div class="item-info">
-                        <h3 class="item-title">Espresso Tonic Con Jugo</h3>
-                        <p class="item-desc">Versión tropical con espresso frío, jugo de naranja natural y agua tónica.</p>
-                        <span class="item-price">$100.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas frías/EXPRESSO COCA-LIMÓN.png" alt="Espresso Cocalimón">
-                    <div class="item-info">
-                        <h3 class="item-title">Espresso Cocalimón</h3>
-                        <p class="item-desc">Doble shot de espresso guerrerense con Coca-Cola y un toque de limón fresco.</p>
-                        <span class="item-price">$90.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas frías/ICE STEAMED AMERICANO.png" alt="Ice Steamed Americano">
-                    <div class="item-info">
-                        <h3 class="item-title">Ice Steamed Americano</h3>
-                        <p class="item-desc">Americano preparado con agua vaporizada y luego enfriada, servido sobre hielo.</p>
-                        <span class="item-price">$80.00</span>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <img src="assets/menu/bebidas frías/CAPUCHINO FRAPPE.png" alt="Frappé Clásico">
-                    <div class="item-info">
-                        <h3 class="item-title">Frappé Clásico</h3>
-                        <p class="item-desc">Capuchino frío y granizado.</p>
-                        <span class="item-price">$85.00</span>
-                    </div>
-                </div>
+                <div class="menu-item"><img src="assets/menu/bebidas frías/EXPRESSO TONIC.png"><div class="item-info"><h3 class="item-title">Espresso Tonic</h3><span class="item-price">$85.00</span></div></div>
             </div>
         </section>
 
         <section id="contacto" class="contact-section">
             <h2>Información y Reservas</h2>
-            
             <div class="contact-icons">
                 <div class="contact-item">
-                    <a href="https://www.instagram.com/jazz_pizza.jazz/" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
+                    <a href="https://www.instagram.com/jazz_pizza.jazz/" target="_blank"><i class="fab fa-instagram"></i></a>
                     <span class="contact-text">Síguenos</span>
                 </div>
-
                 <div class="contact-item">
-                    <a href="https://wa.me/525527367912" target="_blank">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
+                    <a href="https://wa.me/525527367912" target="_blank"><i class="fab fa-whatsapp"></i></a>
                     <span class="contact-text">55 2736 7912</span>
                     <a href="https://wa.me/525527367912" target="_blank" class="contact-btn-small">Enviar Mensaje</a>
                 </div>
-
                 <div class="contact-item">
-                    <a href="https://www.facebook.com/groups/368619106483598" target="_blank">
-                        <i class="fab fa-facebook"></i>
-                    </a>
+                    <a href="https://www.facebook.com/groups/368619106483598" target="_blank"><i class="fab fa-facebook"></i></a>
                     <span class="contact-text">Únete al grupo</span>
                 </div>
             </div>
@@ -604,20 +331,17 @@
 
         <footer>
             <div class="footer-logo">PIZZA JAZZ CAFÉ</div>
-            <p>Portales, Ciudad de México</p>
-            <p>&copy; 2026 Todos los derechos reservados.</p>
+            <p>Portales, Ciudad de México &copy; 2026</p>
         </footer>
     </div>
 
     <div id="agenda-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeAgendaModal()">&times;</span>
-            
-            <div style="text-align: center; margin-bottom: 30px;">
+             <div style="text-align: center; margin-bottom: 30px;">
                 <h1 style="font-size: 2.5rem; color: var(--accent-color);">Próximos Eventos</h1>
                 <p style="color: #aaa;">Jazz en vivo, cultura y comunidad</p>
              </div>
-
             <div id="events-grid" class="events-container">
                 <div class="loading">Cargando eventos...</div>
             </div>
@@ -630,25 +354,31 @@
         import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
         let animationId;
-        const container = document.getElementById('splash-canvas-container');
+        // Importante: ALPHA: TRUE para que el fondo sea transparente en el Hero
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        // Inicialmente lo ponemos en el contenedor del splash
+        const splashContainer = document.getElementById('splash-canvas-container');
+        splashContainer.appendChild(renderer.domElement);
+        
+        // Configuración inicial de tamaño (Fullscreen)
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        // Pixel ratio para nitidez en móviles
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x222222);
+        // NO ponemos scene.background. Dejamos que CSS controle el color de fondo.
+        // En splash: CSS #050505. En Hero: CSS transparente (video se ve).
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 15);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        container.appendChild(renderer.domElement);
-
         // Variables Mouse
-        let mouseX = 0;
-        let mouseY = 0;
-        let targetRotationX = 0;
-        let targetRotationY = 0;
-        const windowHalfX = window.innerWidth / 2;
-        const windowHalfY = window.innerHeight / 2;
+        let mouseX = 0; let mouseY = 0;
+        let targetRotationX = 0; let targetRotationY = 0;
+        let windowHalfX = window.innerWidth / 2;
+        let windowHalfY = window.innerHeight / 2;
 
         document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX - windowHalfX) / 2; 
@@ -662,13 +392,12 @@
         dirLight.position.set(5, 5, 10);
         scene.add(dirLight);
 
-        // Logo
+        // Grupo Logo
         const logoGroup = new THREE.Group();
         scene.add(logoGroup);
 
         const loader = new FontLoader();
         loader.load('https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json', function (font) {
-            
             const textParams = { font: font, size: 1.2, height: 0.4, curveSegments: 12, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.02, bevelOffset: 0, bevelSegments: 5 };
             const matGray = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.4, metalness: 0.1 });
             const matBlackText = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
@@ -705,22 +434,44 @@
             targetRotationX = mouseY * 0.001;
             logoGroup.rotation.y += (targetRotationY - logoGroup.rotation.y) * 0.05;
             logoGroup.rotation.x += (targetRotationX - logoGroup.rotation.x) * 0.05;
-            
-            // Límites
             logoGroup.rotation.y = Math.max(Math.min(logoGroup.rotation.y, 0.4), -0.4);
             logoGroup.rotation.x = Math.max(Math.min(logoGroup.rotation.x, 0.3), -0.3);
-
             renderer.render(scene, camera);
         }
         animate();
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        // --- LÓGICA DE TRANSICIÓN Y RESIZE ---
+        
+        // Estado: ¿Está el logo en modo Splash o Hero?
+        let isHeroMode = false;
+        const heroTarget = document.getElementById('hero-3d-target');
 
-        // Intro Logic
+        function updateCanvasSize() {
+            if (isHeroMode) {
+                // Si está en el Hero, usa el tamaño del contenedor del Hero
+                const width = heroTarget.clientWidth;
+                const height = heroTarget.clientHeight;
+                renderer.setSize(width, height);
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                
+                // Actualizamos centros para el mouse
+                windowHalfX = window.innerWidth / 2; // El mouse sigue relativo a ventana
+                windowHalfY = window.innerHeight / 2;
+                
+            } else {
+                // Si está en Splash, usa toda la ventana
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                windowHalfX = window.innerWidth / 2;
+                windowHalfY = window.innerHeight / 2;
+            }
+        }
+
+        window.addEventListener('resize', updateCanvasSize);
+
+        // Entrar al Sitio
         const enterBtn = document.getElementById('enter-btn');
         const splashScreen = document.getElementById('splash-screen');
         const mainSite = document.getElementById('main-site');
@@ -728,70 +479,63 @@
 
         enterBtn.addEventListener('click', () => {
             bgMusic.volume = 0.5; 
-            bgMusic.play().catch(e => console.log("Error de audio:", e));
+            bgMusic.play().catch(e => console.log("Error audio:", e));
+            
+            // 1. Desvanecer el Splash Screen (el fondo negro y botón)
             splashScreen.style.opacity = '0';
-            setTimeout(() => {
-                splashScreen.style.display = 'none';
-                cancelAnimationFrame(animationId); 
-                mainSite.style.display = 'block';
-                setTimeout(() => { mainSite.style.opacity = '1'; }, 50);
-            }, 1000);
+            splashScreen.style.visibility = 'hidden'; // Para que no bloquee clicks después
+            
+            // 2. Mostrar sitio principal
+            mainSite.style.display = 'block';
+            setTimeout(() => { mainSite.style.opacity = '1'; }, 50);
+
+            // 3. MOVER EL CANVAS AL HERO
+            isHeroMode = true;
+            heroTarget.appendChild(renderer.domElement);
+            updateCanvasSize(); // Recalcular tamaño para ajustar al contenedor del Hero
+            
+            // Ajustar un poco la cámara si es necesario para el nuevo tamaño pequeño
+            // (Opcional: Si se ve muy cerca o lejos, ajusta camera.position.z aquí)
         });
     </script>
 
     <script>
-        // --- 1. NAVBAR SCROLL ---
+        // Navbar Scroll
         window.addEventListener('scroll', function () {
             const header = document.getElementById('header');
-            if (window.scrollY > 50) { header.classList.add('scrolled'); } 
-            else { header.classList.remove('scrolled'); }
+            if (window.scrollY > 50) header.classList.add('scrolled'); 
+            else header.classList.remove('scrolled');
         });
 
-        // --- 2. TABS DEL MENÚ ---
+        // Tabs
         window.openTab = function(evt, tabName) {
             var i, x, tablinks;
             x = document.getElementsByClassName("menu-grid");
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
-                x[i].classList.remove('active');
-            }
+            for (i = 0; i < x.length; i++) { x[i].style.display = "none"; x[i].classList.remove('active'); }
             tablinks = document.getElementsByClassName("tab-btn");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
+            for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
             const activeGrid = document.getElementById(tabName);
             activeGrid.style.display = "grid";
             setTimeout(() => activeGrid.classList.add('active'), 10);
             evt.currentTarget.className += " active";
         }
 
-        // --- 3. LÓGICA DE AGENDA (FETCH CSV) ---
+        // Agenda & Contacto Link Fix
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAzqway7Ajx3mqnMvNkQlPlzQzQn8rTMAo7g0rA0nc3opRC3PbYMFTS2Di6oZCoqpK_aei__iyEO90/pub?output=csv';
         let eventsLoaded = false;
 
         window.openAgendaModal = function() {
             document.getElementById('agenda-modal').style.display = "block";
-            // Prevenir scroll en el body
             document.body.style.overflow = "hidden";
-            
-            if (!eventsLoaded) {
-                fetchEvents();
-                eventsLoaded = true;
-            }
+            if (!eventsLoaded) { fetchEvents(); eventsLoaded = true; }
         }
 
         window.closeAgendaModal = function() {
             document.getElementById('agenda-modal').style.display = "none";
-            // Restaurar scroll
             document.body.style.overflow = "auto";
         }
-
-        // Cerrar al hacer clic fuera del contenido
         window.onclick = function(event) {
-            const modal = document.getElementById('agenda-modal');
-            if (event.target == modal) {
-                closeAgendaModal();
-            }
+            if (event.target == document.getElementById('agenda-modal')) closeAgendaModal();
         }
 
         async function fetchEvents() {
@@ -800,34 +544,18 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.text();
 
-                // CSV Parser (Tu código original)
                 function parseCSV(text) {
-                    const rows = [];
-                    let row = [];
-                    let inQuote = false;
-                    let currentCell = '';
+                    const rows = []; let row = []; let inQuote = false; let currentCell = '';
                     for (let i = 0; i < text.length; i++) {
-                        const char = text[i];
-                        const nextChar = text[i + 1];
-                        if (char === '"') {
-                            if (inQuote && nextChar === '"') {
-                                currentCell += '"'; i++;
-                            } else { inQuote = !inQuote; }
-                        } else if (char === ',' && !inQuote) {
-                            row.push(currentCell.trim()); currentCell = '';
-                        } else if ((char === '\r' || char === '\n') && !inQuote) {
-                            if (currentCell || row.length > 0) {
-                                row.push(currentCell.trim());
-                                if (row.some(cell => cell !== '')) rows.push(row);
-                                row = []; currentCell = '';
-                            }
+                        const char = text[i]; const nextChar = text[i + 1];
+                        if (char === '"') { if (inQuote && nextChar === '"') { currentCell += '"'; i++; } else { inQuote = !inQuote; } }
+                        else if (char === ',' && !inQuote) { row.push(currentCell.trim()); currentCell = ''; }
+                        else if ((char === '\r' || char === '\n') && !inQuote) {
+                            if (currentCell || row.length > 0) { row.push(currentCell.trim()); if (row.some(cell => cell !== '')) rows.push(row); row = []; currentCell = ''; }
                             if (char === '\r' && nextChar === '\n') i++;
                         } else { currentCell += char; }
                     }
-                    if (currentCell || row.length > 0) {
-                        row.push(currentCell.trim());
-                        if (row.some(cell => cell !== '')) rows.push(row);
-                    }
+                    if (currentCell || row.length > 0) { row.push(currentCell.trim()); if (row.some(cell => cell !== '')) rows.push(row); }
                     return rows;
                 }
 
@@ -837,45 +565,28 @@
 
                 rows.slice(1).forEach(cols => {
                     if (cols.length < 2) return;
-                    const date = cols[0] || '';
-                    const artist = cols[1] || 'Evento Especial';
-                    const time = cols[2] || '';
-                    const desc = cols[3] || '';
-                    let cover = cols[4] || '0';
-                    const imgUrl = cols[5] || 'assets/logo.png';
-                    const reserveLink = cols[6] || '#';
+                    const [date, artist, time, desc, cover, imgUrl, reserveLink] = [
+                        cols[0] || '', cols[1] || 'Evento', cols[2] || '', cols[3] || '', cols[4] || '0', cols[5] || 'assets/logo.png', cols[6] || '#'
+                    ];
                     const priceValue = parseInt(cover.replace(/[^0-9]/g, '')) || 0;
                     const priceDisplay = priceValue === 0 ? 'Entrada Libre' : `$${priceValue}`;
 
+                    let buttonHTML;
+                    if (reserveLink.includes('contacto')) {
+                        buttonHTML = `<button class="btn-reserve" onclick="closeAgendaModal(); document.getElementById('contacto').scrollIntoView({behavior: 'smooth'});" style="border:none; cursor:pointer;">Reservar</button>`;
+                    } else {
+                        buttonHTML = `<a href="${reserveLink}" target="_blank" class="btn-reserve">Reservar</a>`;
+                    }
+
                     const card = document.createElement('div');
                     card.className = 'event-card';
-                    card.innerHTML = `
-                        <img src="${imgUrl}" alt="${artist}" class="event-image" onerror="this.src='assets/logo.png'">
-                        <div class="event-details">
-                            <div class="event-date">${date} | ${time}</div>
-                            <h3 class="event-title">${artist}</h3>
-                            <p class="event-desc">${desc}</p>
-                            <div class="event-meta">
-                                <span class="event-price">${priceDisplay}</span>
-                                <a href="${reserveLink}" target="_blank" class="btn-reserve">Reservar</a>
-                            </div>
-                        </div>
-                    `;
+                    card.innerHTML = `<img src="${imgUrl}" class="event-image" onerror="this.src='assets/logo.png'"><div class="event-details"><div class="event-date">${date} | ${time}</div><h3 class="event-title">${artist}</h3><p class="event-desc">${desc}</p><div class="event-meta"><span class="event-price">${priceDisplay}</span>${buttonHTML}</div></div>`;
                     grid.appendChild(card);
                 });
-
-                if (grid.children.length === 0) {
-                    grid.innerHTML = '<div class="loading">No hay eventos próximos.</div>';
-                }
-
+                if (grid.children.length === 0) grid.innerHTML = '<div class="loading">No hay eventos próximos.</div>';
             } catch (error) {
-                console.error('Error loading events:', error);
-                document.getElementById('events-grid').innerHTML = `
-                    <div class="loading" style="color: #a00;">
-                        No se pudo conectar con la agenda.<br>
-                        <small>Intenta recargar la página.</small>
-                    </div>
-                `;
+                console.error(error);
+                document.getElementById('events-grid').innerHTML = '<div class="loading">Error cargando agenda.</div>';
             }
         }
     </script>
