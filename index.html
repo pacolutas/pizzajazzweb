@@ -29,6 +29,8 @@
             justify-content: flex-end;
             align-items: center;
             transition: opacity 1s ease-out, visibility 1s;
+            /* IMPORTANTE: Permite rotar sin mover la pantalla en splash */
+            touch-action: none; 
         }
 
         #splash-canvas-container {
@@ -92,21 +94,57 @@
         a { color: inherit; text-decoration: none; transition: color 0.3s; }
         a:hover { color: var(--accent-color); }
 
-        /* Header Desktop por defecto */
+        /* --- HEADER & NAV (NUEVO DISEÑO CÁPSULA) --- */
         header {
-            position: fixed; top: 0; width: 100%; padding: 20px 40px;
+            position: fixed; top: 0; width: 100%; padding: 15px 40px;
             display: flex; justify-content: space-between; align-items: center;
             z-index: 1000;
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
-            transition: background 0.5s, padding 0.3s;
+            transition: background 0.5s;
         }
         header.scrolled {
-            background: rgba(5, 5, 5, 0.98); padding: 10px 40px; border-bottom: 1px solid #222;
+            background: rgba(5, 5, 5, 0.98); border-bottom: 1px solid #222;
         }
-        nav ul { display: flex; list-style: none; gap: 30px; }
+
+        nav ul { 
+            display: flex; 
+            list-style: none; 
+            gap: 15px; 
+        }
+
+        /* Estilo Botón/Cápsula Unificado */
         nav ul li a { 
-            font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; 
-            padding: 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 110px; /* ANCHO FIJO PARA TODOS */
+            height: 36px;
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 50px; /* Redondeado total */
+            color: #fff;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.4); /* Fondo sutil */
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover, nav ul li a:active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            font-weight: bold;
+        }
+        
+        /* Highlight para agenda */
+        nav ul li a.agenda-btn {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+        nav ul li a.agenda-btn:hover {
+            background: var(--accent-color);
+            color: #000;
         }
 
         /* Hero */
@@ -122,15 +160,18 @@
         .hero-content { 
             z-index: 1; padding: 20px; width: 100%; max-width: 1200px;
             display: flex; flex-direction: column; align-items: center;
-            /* Añadimos padding top para compensar el header fijo si es muy alto en móvil */
-            padding-top: 80px; 
         }
         #hero-3d-target {
             width: 100%;
             height: 220px;
             position: relative;
-            margin-bottom: 0px; 
+            margin-bottom: 0px;
+            /* IMPORTANTE: Permite rotar el logo con el dedo sin mover la pagina */
+            touch-action: none; 
+            cursor: grab;
         }
+        #hero-3d-target:active { cursor: grabbing; }
+
         .hero-subtitle { 
             font-size: 1.8rem; font-family: var(--font-serif); color: #fff; margin-bottom: 40px; 
             text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px;
@@ -173,7 +214,6 @@
         /* Contact Section con MAPA */
         .contact-section { padding: 80px 20px; background-color: #000; text-align: center; border-top: 1px solid #222; }
         .contact-section h2 { font-size: 2.5rem; color: var(--accent-color); margin-bottom: 50px; }
-        
         .contact-icons { display: flex; justify-content: center; align-items: flex-start; gap: 80px; flex-wrap: wrap; margin-bottom: 60px; }
         .contact-item { display: flex; flex-direction: column; align-items: center; gap: 15px; color: #fff; font-size: 1.1rem; width: 150px; }
         .contact-item i { font-size: 3rem; color: var(--accent-color); transition: transform 0.3s, color 0.3s; }
@@ -185,27 +225,13 @@
         }
         .contact-btn-small:hover { background: #128C7E; color: white; }
 
-        /* Estilos del Mapa */
+        /* Mapa */
         .map-container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid #333;
-            filter: grayscale(100%) contrast(1.1);
-            transition: filter 0.5s;
+            width: 100%; max-width: 1000px; margin: 0 auto; border-radius: 10px; overflow: hidden; border: 1px solid #333;
+            filter: grayscale(100%) contrast(1.1); transition: filter 0.5s;
         }
-        .map-container:hover {
-            filter: grayscale(0%);
-            border-color: var(--accent-color);
-        }
-        iframe {
-            width: 100%;
-            height: 400px;
-            border: 0;
-            display: block;
-        }
+        .map-container:hover { filter: grayscale(0%); border-color: var(--accent-color); }
+        iframe { width: 100%; height: 400px; border: 0; display: block; }
 
         /* Modal Agenda */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.95); backdrop-filter: blur(5px); }
@@ -231,7 +257,7 @@
         .footer-logo { margin-bottom: 20px; font-family: var(--font-serif); font-size: 1.5rem; color: #fff; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- RESPONSIVE MODERNO (MENÚ TIPO APP) --- */
+        /* --- RESPONSIVE --- */
         @media (max-width: 1024px) { 
             #hero-3d-target { height: 180px; }
             .hero-subtitle { font-size: 1.5rem; }
@@ -240,68 +266,44 @@
         /* CELULAR / TABLET VERTICAL */
         @media (max-width: 768px) {
             header {
-                /* Cambiamos a columna para apilar logo y menú */
+                /* Layout Columna: Logo arriba, Botones abajo */
                 flex-direction: column;
                 padding: 10px 0;
-                background: rgba(5, 5, 5, 0.98); /* Fondo sólido siempre en móvil para legibilidad */
+                background: rgba(5, 5, 5, 0.98); /* Fondo sólido */
                 border-bottom: 1px solid #222;
-                max-height: 130px; /* Altura controlada */
+                gap: 10px;
             }
 
-            .logo {
-                margin-bottom: 10px;
-            }
-            .logo img {
-                height: 40px !important; /* Logo un poco más chico */
-            }
-
-            nav {
-                width: 100%;
-                overflow-x: auto; /* Scroll horizontal si es muy angosto */
-            }
+            .logo { margin-bottom: 0; }
+            .logo img { height: 40px !important; }
 
             nav ul {
-                display: flex;
-                flex-wrap: wrap; /* Permitir que bajen de línea si necesario, o usar 'nowrap' para scroll */
+                gap: 8px; /* Espacio entre botones */
                 justify-content: center;
-                gap: 10px;
-                padding-bottom: 10px;
+                flex-wrap: wrap;
             }
 
+            /* Los botones mantienen su tamaño en móvil pero se acomodan */
             nav ul li a {
-                /* Estilo "Botón/Cápsula" tipo Alter.Lab */
-                display: inline-block;
-                padding: 6px 15px;
-                border: 1px solid #444;
-                border-radius: 20px;
-                background: rgba(255,255,255,0.05);
-                font-size: 0.75rem; /* Texto pequeño y limpio */
-                letter-spacing: 1px;
-                white-space: nowrap;
-            }
-            
-            nav ul li a:hover, nav ul li a:active {
-                border-color: var(--accent-color);
-                color: var(--accent-color);
-                background: rgba(212, 175, 55, 0.1);
+                width: 95px; /* Un pelín más chicos para asegurar que quepan 3 */
+                font-size: 0.7rem;
+                height: 32px;
             }
 
-            /* Ajustes cuerpo */
-            .hero-content {
-                padding-top: 140px; /* Más espacio arriba para que no lo tape el header doble */
-            }
+            .hero-content { padding-top: 140px; } /* Compensar header más alto */
             .about { padding: 60px 5%; }
             .menu { padding: 60px 4%; }
             .menu-grid { grid-template-columns: 1fr; gap: 40px; }
             .contact-icons { flex-direction: column; align-items: center; gap: 40px; }
             
-            /* Logo 3D más chico pero funcional */
             #hero-3d-target { height: 180px; }
-            iframe { height: 300px; }
+            iframe { height: 300px; } 
         }
         
         @media (max-width: 480px) {
             .hero-buttons .btn { width: 100%; }
+            /* Asegurar que quepan en pantallas muy angostas */
+            nav ul li a { width: 90px; font-size: 0.65rem; }
         }
     </style>
 </head>
@@ -325,11 +327,9 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="#home">Inicio</a></li>
-                    <li><a href="#about">Nosotros</a></li>
                     <li><a href="#menu">Menú</a></li>
                     <li><a href="#contacto">Contacto</a></li>
-                    <li><a onclick="openAgendaModal()" style="color: var(--accent-color);">Agenda</a></li>
+                    <li><a onclick="openAgendaModal()" class="agenda-btn">Agenda</a></li>
                 </ul>
             </nav>
         </header>
@@ -480,9 +480,9 @@
         // --- EVENT LISTENER PARA TOUCH (CELULAR) ---
         document.addEventListener('touchmove', (event) => {
             if (event.touches.length > 0) {
-                // Multiplicamos por 2 para que sea más sensible en pantallas pequeñas
-                mouseX = (event.touches[0].clientX - windowHalfX) * 2; 
-                mouseY = (event.touches[0].clientY - windowHalfY) * 2;
+                // Mayor sensibilidad para el toque
+                mouseX = (event.touches[0].clientX - windowHalfX) * 3; 
+                mouseY = (event.touches[0].clientY - windowHalfY) * 3;
             }
         }, { passive: true });
 
@@ -532,7 +532,6 @@
         function animate() {
             animationId = requestAnimationFrame(animate);
             
-            // Sensibilidad ajustada
             targetRotationY = mouseX * 0.001; 
             targetRotationX = mouseY * 0.001;
             
