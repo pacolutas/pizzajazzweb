@@ -564,8 +564,7 @@
             evt.currentTarget.className += " active";
         }
 
-        // --- MANEJO DE DATOS (NUEVAS URLs) ---
-        // Se usan tus enlaces específicos para cada sección.
+        // --- MANEJO DE DATOS (URLs DEFINITIVAS) ---
         const MENU_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAzqway7Ajx3mqnMvNkQlPlzQzQn8rTMAo7g0rA0nc3opRC3PbYMFTS2Di6oZCoqpK_aei__iyEO90/pub?gid=908394891&single=true&output=csv';
         const AGENDA_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAzqway7Ajx3mqnMvNkQlPlzQzQn8rTMAo7g0rA0nc3opRC3PbYMFTS2Di6oZCoqpK_aei__iyEO90/pub?gid=0&single=true&output=csv'; 
         
@@ -600,7 +599,7 @@
             return rows;
         }
 
-        // --- FETCH MENÚ (USA URL DE MENÚ) ---
+        // --- FETCH MENÚ (CON CORRECCIÓN DE "MEMORIA" y FORMATO PRECIO) ---
         async function fetchMenu() {
             try {
                 const response = await fetch(MENU_CSV_URL);
@@ -621,23 +620,40 @@
                 if(friasContainer) friasContainer.innerHTML = '';
 
                 let itemsFound = 0;
+                let lastCategory = ''; // VARIABLE DE MEMORIA
 
                 // Procesar filas (Saltando cabecera)
                 rows.slice(1).forEach(cols => {
                     // Columnas esperadas: A(Categoria), B(Producto), C(Descripcion), D(Precio), E(Image_URL)
                     if (cols.length < 2) return;
                     
-                    const categoria = (cols[0] || '').toLowerCase().trim();
+                    let rawCategory = (cols[0] || '').trim().toLowerCase();
+                    
+                    // MEMORIA DE CATEGORÍA
+                    if (rawCategory !== '') {
+                        lastCategory = rawCategory;
+                    }
+                    if (lastCategory === '') return;
+
                     const producto = cols[1] || '';
                     const descripcion = cols[2] || '';
-                    const precio = cols[3] || '';
+                    const rawPrice = cols[3] || '0'; // Precio Crudo
                     const imagen = cols[4] || 'assets/logo.png';
+                    
+                    // Si no hay nombre de producto, ignoramos
+                    if (!producto) return;
+
+                    // --- FORMATO DE PRECIO (NUEVO) ---
+                    // 1. Limpiamos el string para dejar solo números y punto decimal
+                    let priceNumber = parseFloat(rawPrice.toString().replace(/[^0-9.]/g, ''));
+                    // 2. Formateamos
+                    let precioFinal = isNaN(priceNumber) ? rawPrice : `$${priceNumber.toFixed(2)}`;
 
                     let targetContainer = null;
 
-                    if (categoria.includes('pizza')) targetContainer = pizzasContainer;
-                    else if (categoria.includes('caliente')) targetContainer = calientesContainer;
-                    else if (categoria.includes('fria') || categoria.includes('fría')) targetContainer = friasContainer;
+                    if (lastCategory.includes('pizza')) targetContainer = pizzasContainer;
+                    else if (lastCategory.includes('caliente')) targetContainer = calientesContainer;
+                    else if (lastCategory.includes('fria') || lastCategory.includes('fría')) targetContainer = friasContainer;
 
                     if (targetContainer) {
                         itemsFound++;
@@ -648,7 +664,7 @@
                             <div class="item-info">
                                 <h3 class="item-title">${producto}</h3>
                                 <p class="item-desc">${descripcion}</p>
-                                <span class="item-price">${precio}</span>
+                                <span class="item-price">${precioFinal}</span>
                             </div>
                         `;
                         targetContainer.appendChild(itemDiv);
@@ -656,7 +672,7 @@
                 });
 
                 if (itemsFound === 0) {
-                     document.getElementById('pizzas').innerHTML = '<div class="loading">No se encontraron productos en la hoja de menú.</div>';
+                     document.getElementById('pizzas').innerHTML = '<div class="loading">No se encontraron productos.</div>';
                 }
 
             } catch (error) {
@@ -665,7 +681,7 @@
             }
         }
 
-        // --- FETCH EVENTS (USA URL DE AGENDA) ---
+        // --- FETCH EVENTS ---
         async function fetchEvents() {
             try {
                 const response = await fetch(AGENDA_CSV_URL);
@@ -682,6 +698,8 @@
                     const [date, artist, time, desc, cover, imgUrl, reserveLink] = [
                         cols[0] || '', cols[1] || 'Evento', cols[2] || '', cols[3] || '', cols[4] || '0', cols[5] || 'assets/logo.png', cols[6] || '#'
                     ];
+                    
+                    if (!date || !artist) return;
 
                     const priceValue = parseInt(cover.replace(/[^0-9]/g, '')) || 0;
                     const priceDisplay = priceValue === 0 ? 'Entrada Libre' : `$${priceValue}`;
