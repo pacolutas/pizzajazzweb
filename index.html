@@ -29,7 +29,6 @@
             justify-content: flex-end;
             align-items: center;
             transition: opacity 1s ease-out, visibility 1s;
-            /* IMPORTANTE: Permite rotar sin mover la pantalla en splash */
             touch-action: none; 
         }
 
@@ -94,7 +93,7 @@
         a { color: inherit; text-decoration: none; transition: color 0.3s; }
         a:hover { color: var(--accent-color); }
 
-        /* --- HEADER & NAV (NUEVO DISEÑO CÁPSULA) --- */
+        /* --- HEADER & NAV --- */
         header {
             position: fixed; top: 0; width: 100%; padding: 15px 40px;
             display: flex; justify-content: space-between; align-items: center;
@@ -112,20 +111,19 @@
             gap: 15px; 
         }
 
-        /* Estilo Botón/Cápsula Unificado */
         nav ul li a { 
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 110px; /* ANCHO FIJO PARA TODOS */
+            width: 110px; 
             height: 36px;
             border: 1px solid rgba(255,255,255,0.6);
-            border-radius: 50px; /* Redondeado total */
+            border-radius: 50px; 
             color: #fff;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            background: rgba(0,0,0,0.4); /* Fondo sutil */
+            background: rgba(0,0,0,0.4); 
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -137,7 +135,6 @@
             font-weight: bold;
         }
         
-        /* Highlight para agenda */
         nav ul li a.agenda-btn {
             border-color: var(--accent-color);
             color: var(--accent-color);
@@ -166,7 +163,6 @@
             height: 220px;
             position: relative;
             margin-bottom: 0px;
-            /* IMPORTANTE: Permite rotar el logo con el dedo sin mover la pagina */
             touch-action: none; 
             cursor: grab;
         }
@@ -211,7 +207,7 @@
         .item-desc { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; }
         .item-price { display: block; font-size: 1.1rem; color: var(--accent-color); font-weight: bold; font-family: var(--font-serif); }
 
-        /* Contact Section con MAPA */
+        /* Contact Section */
         .contact-section { padding: 80px 20px; background-color: #000; text-align: center; border-top: 1px solid #222; }
         .contact-section h2 { font-size: 2.5rem; color: var(--accent-color); margin-bottom: 50px; }
         .contact-icons { display: flex; justify-content: center; align-items: flex-start; gap: 80px; flex-wrap: wrap; margin-bottom: 60px; }
@@ -263,46 +259,37 @@
             .hero-subtitle { font-size: 1.5rem; }
         }
 
-        /* CELULAR / TABLET VERTICAL */
         @media (max-width: 768px) {
             header {
-                /* Layout Columna: Logo arriba, Botones abajo */
                 flex-direction: column;
                 padding: 10px 0;
-                background: rgba(5, 5, 5, 0.98); /* Fondo sólido */
+                background: rgba(5, 5, 5, 0.98);
                 border-bottom: 1px solid #222;
                 gap: 10px;
             }
-
             .logo { margin-bottom: 0; }
             .logo img { height: 40px !important; }
-
             nav ul {
-                gap: 8px; /* Espacio entre botones */
+                gap: 8px; 
                 justify-content: center;
                 flex-wrap: wrap;
             }
-
-            /* Los botones mantienen su tamaño en móvil pero se acomodan */
             nav ul li a {
-                width: 95px; /* Un pelín más chicos para asegurar que quepan 3 */
+                width: 95px; 
                 font-size: 0.7rem;
                 height: 32px;
             }
-
-            .hero-content { padding-top: 140px; } /* Compensar header más alto */
+            .hero-content { padding-top: 140px; } 
             .about { padding: 60px 5%; }
             .menu { padding: 60px 4%; }
             .menu-grid { grid-template-columns: 1fr; gap: 40px; }
             .contact-icons { flex-direction: column; align-items: center; gap: 40px; }
-            
             #hero-3d-target { height: 180px; }
             iframe { height: 300px; } 
         }
         
         @media (max-width: 480px) {
             .hero-buttons .btn { width: 100%; }
-            /* Asegurar que quepan en pantallas muy angostas */
             nav ul li a { width: 90px; font-size: 0.65rem; }
         }
     </style>
@@ -434,50 +421,41 @@
         let animationId;
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         
-        // Inicialmente lo ponemos en el contenedor del splash
         const splashContainer = document.getElementById('splash-canvas-container');
         splashContainer.appendChild(renderer.domElement);
         
-        // Configuración inicial de tamaño (Fullscreen)
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         const scene = new THREE.Scene();
         
-        // CÁMARA
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 15); 
 
-        // Variables Mouse
         let mouseX = 0; let mouseY = 0;
         let targetRotationX = 0; let targetRotationY = 0;
         let windowHalfX = window.innerWidth / 2;
         let windowHalfY = window.innerHeight / 2;
 
-        // --- EVENT LISTENER PARA MOUSE (PC) ---
         document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX - windowHalfX) / 2; 
             mouseY = (event.clientY - windowHalfY) / 2;
         });
 
-        // --- EVENT LISTENER PARA TOUCH (CELULAR) ---
         document.addEventListener('touchmove', (event) => {
             if (event.touches.length > 0) {
-                // Mayor sensibilidad para el toque
                 mouseX = (event.touches[0].clientX - windowHalfX) * 3; 
                 mouseY = (event.touches[0].clientY - windowHalfY) * 3;
             }
         }, { passive: true });
 
-        // Luces
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
         dirLight.position.set(5, 5, 10);
         scene.add(dirLight);
 
-        // Grupo Logo
         const logoGroup = new THREE.Group();
         scene.add(logoGroup);
 
@@ -515,22 +493,15 @@
 
         function animate() {
             animationId = requestAnimationFrame(animate);
-            
             targetRotationY = mouseX * 0.001; 
             targetRotationX = mouseY * 0.001;
-            
             logoGroup.rotation.y += (targetRotationY - logoGroup.rotation.y) * 0.05;
             logoGroup.rotation.x += (targetRotationX - logoGroup.rotation.x) * 0.05;
-            
-            // Límites para que no se voltee demasiado
             logoGroup.rotation.y = Math.max(Math.min(logoGroup.rotation.y, 0.5), -0.5);
             logoGroup.rotation.x = Math.max(Math.min(logoGroup.rotation.x, 0.4), -0.4);
-            
             renderer.render(scene, camera);
         }
         animate();
-
-        // --- LÓGICA DE TRANSICIÓN Y RESIZE ---
         
         let isHeroMode = false;
         const heroTarget = document.getElementById('hero-3d-target');
@@ -555,7 +526,6 @@
 
         window.addEventListener('resize', updateCanvasSize);
 
-        // Entrar al Sitio
         const enterBtn = document.getElementById('enter-btn');
         const splashScreen = document.getElementById('splash-screen');
         const mainSite = document.getElementById('main-site');
@@ -564,33 +534,24 @@
         enterBtn.addEventListener('click', () => {
             bgMusic.volume = 0.5; 
             bgMusic.play().catch(e => console.log("Error audio:", e));
-            
             splashScreen.style.opacity = '0';
             splashScreen.style.visibility = 'hidden';
-            
             mainSite.style.display = 'block';
             setTimeout(() => { mainSite.style.opacity = '1'; }, 50);
-
-            // Mover el canvas al Hero
             isHeroMode = true;
             heroTarget.appendChild(renderer.domElement);
-            
-            // ACERCAR CÁMARA
             camera.position.set(0, 0, 12); 
-            
             updateCanvasSize(); 
         });
     </script>
 
     <script>
-        // Navbar Scroll
         window.addEventListener('scroll', function () {
             const header = document.getElementById('header');
             if (window.scrollY > 50) header.classList.add('scrolled'); 
             else header.classList.remove('scrolled');
         });
 
-        // Tabs
         window.openTab = function(evt, tabName) {
             var i, x, tablinks;
             x = document.getElementsByClassName("menu-grid");
@@ -603,16 +564,10 @@
             evt.currentTarget.className += " active";
         }
 
-        // --- MANEJO DE SHEETS (AGENDA Y MENÚ) ---
-        
-        // URL CRÍTICA: Debes haber hecho "Publicar en la web" -> "CSV" en el Sheet para que funcione.
-        // He construido esta URL basándome en el ID de tu nuevo documento y la pestaña específica (gid=908394891).
-        const NEW_SHEET_URL = 'https://docs.google.com/spreadsheets/d/187ubl_nWDVExkd7LxC0biFrCzttGjNLxQAQVu1Osuzk/pub?gid=908394891&single=true&output=csv';
-        
-        // Usamos la misma hoja para todo si así lo prefieres, o ajusta si la agenda está en otro lado.
-        // Asumiré que el menú nuevo está en esa URL.
-        const MENU_CSV_URL = NEW_SHEET_URL;
-        const AGENDA_CSV_URL = NEW_SHEET_URL; 
+        // --- MANEJO DE DATOS (NUEVAS URLs) ---
+        // Se usan tus enlaces específicos para cada sección.
+        const MENU_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAzqway7Ajx3mqnMvNkQlPlzQzQn8rTMAo7g0rA0nc3opRC3PbYMFTS2Di6oZCoqpK_aei__iyEO90/pub?gid=908394891&single=true&output=csv';
+        const AGENDA_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAzqway7Ajx3mqnMvNkQlPlzQzQn8rTMAo7g0rA0nc3opRC3PbYMFTS2Di6oZCoqpK_aei__iyEO90/pub?gid=0&single=true&output=csv'; 
         
         let eventsLoaded = false;
 
@@ -630,7 +585,6 @@
             if (event.target == document.getElementById('agenda-modal')) closeAgendaModal();
         }
 
-        // Función Helper para parsear CSV
         function parseCSVLocal(text) {
             const rows = []; let row = []; let inQuote = false; let currentCell = '';
             for (let i = 0; i < text.length; i++) {
@@ -646,24 +600,16 @@
             return rows;
         }
 
-        // --- FETCH MENÚ (NUEVO) ---
+        // --- FETCH MENÚ (USA URL DE MENÚ) ---
         async function fetchMenu() {
             try {
-                console.log("Intentando cargar menú desde:", MENU_CSV_URL);
                 const response = await fetch(MENU_CSV_URL);
-                
-                if (!response.ok) {
-                    throw new Error('No se pudo cargar el CSV. Asegúrate de haber publicado la hoja en la web (Archivo > Compartir > Publicar en la web).');
-                }
+                if (!response.ok) throw new Error('Error de conexión con Google Sheets');
                 
                 const data = await response.text();
-                // Si Google nos devuelve una página de login o HTML en vez de CSV, fallará aquí.
-                if(data.trim().startsWith("<!DOCTYPE html>")) {
-                     throw new Error('La URL devolvió HTML en lugar de CSV. Verifica que el enlace sea público (Publicar en la web).');
-                }
+                if(data.trim().startsWith("<!DOCTYPE html>")) throw new Error('El enlace no es un CSV válido.');
 
                 const rows = parseCSVLocal(data);
-                console.log("Filas cargadas:", rows.length);
 
                 // Limpiar contenedores
                 const pizzasContainer = document.getElementById('pizzas');
@@ -678,7 +624,7 @@
 
                 // Procesar filas (Saltando cabecera)
                 rows.slice(1).forEach(cols => {
-                    // Estructura Sheet: A(Categoria), B(Producto), C(Descripcion), D(Precio), E(Image_URL)
+                    // Columnas esperadas: A(Categoria), B(Producto), C(Descripcion), D(Precio), E(Image_URL)
                     if (cols.length < 2) return;
                     
                     const categoria = (cols[0] || '').toLowerCase().trim();
@@ -688,7 +634,7 @@
                     const imagen = cols[4] || 'assets/logo.png';
 
                     let targetContainer = null;
-                    // Lógica más flexible para detectar categorías
+
                     if (categoria.includes('pizza')) targetContainer = pizzasContainer;
                     else if (categoria.includes('caliente')) targetContainer = calientesContainer;
                     else if (categoria.includes('fria') || categoria.includes('fría')) targetContainer = friasContainer;
@@ -710,7 +656,7 @@
                 });
 
                 if (itemsFound === 0) {
-                     document.getElementById('pizzas').innerHTML = '<div class="loading">No se encontraron ítems. Revisa las categorías en el Sheet (Columna A).</div>';
+                     document.getElementById('pizzas').innerHTML = '<div class="loading">No se encontraron productos en la hoja de menú.</div>';
                 }
 
             } catch (error) {
@@ -719,7 +665,7 @@
             }
         }
 
-        // --- FETCH EVENTS (EXISTENTE) ---
+        // --- FETCH EVENTS (USA URL DE AGENDA) ---
         async function fetchEvents() {
             try {
                 const response = await fetch(AGENDA_CSV_URL);
@@ -732,14 +678,10 @@
 
                 rows.slice(1).forEach(cols => {
                     if (cols.length < 2) return;
-                    // Lógica original de agenda (Fecha, Artista, Hora...)
-                    // ASUMO que la hoja sigue teniendo la estructura de agenda si se usa para eso.
+                    
                     const [date, artist, time, desc, cover, imgUrl, reserveLink] = [
                         cols[0] || '', cols[1] || 'Evento', cols[2] || '', cols[3] || '', cols[4] || '0', cols[5] || 'assets/logo.png', cols[6] || '#'
                     ];
-                    
-                    // Simple chequeo para no pintar items de menú como eventos si están mezclados
-                    if (!time || !time.includes(':')) return; 
 
                     const priceValue = parseInt(cover.replace(/[^0-9]/g, '')) || 0;
                     const priceDisplay = priceValue === 0 ? 'Entrada Libre' : `$${priceValue}`;
@@ -763,7 +705,6 @@
             }
         }
 
-        // Cargar menú al inicio
         fetchMenu();
     </script>
 </body>
