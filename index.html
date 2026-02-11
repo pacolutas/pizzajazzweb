@@ -605,11 +605,14 @@
 
         // --- MANEJO DE SHEETS (AGENDA Y MENÚ) ---
         
-        // URL PARA EL MENU Y AGENDA (Asumo que es la misma hoja según instrucción, o usas diferentes URL si son diferentes CSV)
-        // Usaré la URL que me diste en el prompt para el MENÚ.
-        const MENU_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAzqway7Ajx3mqnMvNkQlPlzQzQn8rTMAo7g0rA0nc3opRC3PbYMFTS2Di6oZCoqpK_aei__iyEO90/pub?output=csv';
-        // URL existente de agenda (la mantengo por si acaso, aunque parece que quieres usar la nueva para todo, pero no especificaste si la agenda migra a la nueva URL, así que uso la del prompt para menu).
-        const AGENDA_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAzqway7Ajx3mqnMvNkQlPlzQzQn8rTMAo7g0rA0nc3opRC3PbYMFTS2Di6oZCoqpK_aei__iyEO90/pub?output=csv'; 
+        // URL CRÍTICA: Debes haber hecho "Publicar en la web" -> "CSV" en el Sheet para que funcione.
+        // He construido esta URL basándome en el ID de tu nuevo documento y la pestaña específica (gid=908394891).
+        const NEW_SHEET_URL = 'https://docs.google.com/spreadsheets/d/187ubl_nWDVExkd7LxC0biFrCzttGjNLxQAQVu1Osuzk/pub?gid=908394891&single=true&output=csv';
+        
+        // Usamos la misma hoja para todo si así lo prefieres, o ajusta si la agenda está en otro lado.
+        // Asumiré que el menú nuevo está en esa URL.
+        const MENU_CSV_URL = NEW_SHEET_URL;
+        const AGENDA_CSV_URL = NEW_SHEET_URL; 
         
         let eventsLoaded = false;
 
@@ -646,10 +649,21 @@
         // --- FETCH MENÚ (NUEVO) ---
         async function fetchMenu() {
             try {
+                console.log("Intentando cargar menú desde:", MENU_CSV_URL);
                 const response = await fetch(MENU_CSV_URL);
-                if (!response.ok) throw new Error('Network response was not ok');
+                
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar el CSV. Asegúrate de haber publicado la hoja en la web (Archivo > Compartir > Publicar en la web).');
+                }
+                
                 const data = await response.text();
+                // Si Google nos devuelve una página de login o HTML en vez de CSV, fallará aquí.
+                if(data.trim().startsWith("<!DOCTYPE html>")) {
+                     throw new Error('La URL devolvió HTML en lugar de CSV. Verifica que el enlace sea público (Publicar en la web).');
+                }
+
                 const rows = parseCSVLocal(data);
+                console.log("Filas cargadas:", rows.length);
 
                 // Limpiar contenedores
                 const pizzasContainer = document.getElementById('pizzas');
@@ -660,23 +674,27 @@
                 if(calientesContainer) calientesContainer.innerHTML = '';
                 if(friasContainer) friasContainer.innerHTML = '';
 
+                let itemsFound = 0;
+
                 // Procesar filas (Saltando cabecera)
                 rows.slice(1).forEach(cols => {
                     // Estructura Sheet: A(Categoria), B(Producto), C(Descripcion), D(Precio), E(Image_URL)
                     if (cols.length < 2) return;
                     
-                    const categoria = (cols[0] || '').toLowerCase();
+                    const categoria = (cols[0] || '').toLowerCase().trim();
                     const producto = cols[1] || '';
                     const descripcion = cols[2] || '';
                     const precio = cols[3] || '';
                     const imagen = cols[4] || 'assets/logo.png';
 
                     let targetContainer = null;
+                    // Lógica más flexible para detectar categorías
                     if (categoria.includes('pizza')) targetContainer = pizzasContainer;
                     else if (categoria.includes('caliente')) targetContainer = calientesContainer;
                     else if (categoria.includes('fria') || categoria.includes('fría')) targetContainer = friasContainer;
 
                     if (targetContainer) {
+                        itemsFound++;
                         const itemDiv = document.createElement('div');
                         itemDiv.className = 'menu-item';
                         itemDiv.innerHTML = `
@@ -691,9 +709,13 @@
                     }
                 });
 
+                if (itemsFound === 0) {
+                     document.getElementById('pizzas').innerHTML = '<div class="loading">No se encontraron ítems. Revisa las categorías en el Sheet (Columna A).</div>';
+                }
+
             } catch (error) {
                 console.error("Error cargando menú:", error);
-                document.getElementById('pizzas').innerHTML = '<div class="loading">Error al cargar menú.</div>';
+                document.getElementById('pizzas').innerHTML = `<div class="loading" style="color:red; font-size:1rem;">Error: ${error.message}</div>`;
             }
         }
 
@@ -711,20 +733,19 @@
                 rows.slice(1).forEach(cols => {
                     if (cols.length < 2) return;
                     // Lógica original de agenda (Fecha, Artista, Hora...)
-                    // NOTA: Si usas la misma hoja para todo, asegurate que las columnas no choquen o usa pestañas diferentes y publica CSVs diferentes.
-                    // Aquí asumo que la estructura de agenda se mantiene como estaba antes.
+                    // ASUMO que la hoja sigue teniendo la estructura de agenda si se usa para eso.
                     const [date, artist, time, desc, cover, imgUrl, reserveLink] = [
                         cols[0] || '', cols[1] || 'Evento', cols[2] || '', cols[3] || '', cols[4] || '0', cols[5] || 'assets/logo.png', cols[6] || '#'
                     ];
                     
-                    // Pequeña validación: Si la fila parece ser de menú (tiene precio en col D en vez de descripción), saltarla si están mezclados.
-                    // Pero como pediste "limitada a crear el menú", dejo la lógica de agenda tal cual estaba.
-                    
+                    // Simple chequeo para no pintar items de menú como eventos si están mezclados
+                    if (!time || !time.includes(':')) return; 
+
                     const priceValue = parseInt(cover.replace(/[^0-9]/g, '')) || 0;
                     const priceDisplay = priceValue === 0 ? 'Entrada Libre' : `$${priceValue}`;
 
                     let buttonHTML;
-                    if (reserveLink.includes('contacto')) {
+                    if (reserveLink && reserveLink.includes('contacto')) {
                         buttonHTML = `<button class="btn-reserve" onclick="closeAgendaModal(); document.getElementById('contacto').scrollIntoView({behavior: 'smooth'});" style="border:none; cursor:pointer;">Reservar</button>`;
                     } else {
                         buttonHTML = `<a href="${reserveLink}" target="_blank" class="btn-reserve">Reservar</a>`;
